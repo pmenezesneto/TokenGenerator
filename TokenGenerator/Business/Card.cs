@@ -42,7 +42,7 @@ namespace TokenGenerator
 
         public bool ValidateToken(Card requestCard)
         {
-            return this.RegistrationDate > DateTime.UtcNow.AddMinutes(-30) &&
+            return this.RegistrationDate >= DateTime.UtcNow.AddMinutes(-30) &&
                 this.Customer.Exists(requestCard.CustomerId);
         }
     }

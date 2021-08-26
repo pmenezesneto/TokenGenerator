@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenGenerator", "TokenGenerator\TokenGenerator.csproj", "{E9F30555-6A51-461E-9A6D-3E6F79A0173B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TokenGenerator.Tests", "TokenGenerator.Tests\TokenGenerator.Tests.csproj", "{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,17 @@ Global
 		{E9F30555-6A51-461E-9A6D-3E6F79A0173B}.Release|x64.Build.0 = Release|Any CPU
 		{E9F30555-6A51-461E-9A6D-3E6F79A0173B}.Release|x86.ActiveCfg = Release|Any CPU
 		{E9F30555-6A51-461E-9A6D-3E6F79A0173B}.Release|x86.Build.0 = Release|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Debug|x64.Build.0 = Debug|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Debug|x86.Build.0 = Debug|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Release|x64.ActiveCfg = Release|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Release|x64.Build.0 = Release|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Release|x86.ActiveCfg = Release|Any CPU
+		{1ED1333B-E9B1-4C37-8BBC-0E3D52E3B540}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
