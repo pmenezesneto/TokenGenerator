@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace TokenGenerator.Models
@@ -5,7 +6,7 @@ namespace TokenGenerator.Models
     /// <summary>
     /// CustomerCardContext class.
     /// </summary>
-    public class CustomerCardContext : DbContext
+    public class CustomerCardContext : DbContext, IDbContext
     {
         public CustomerCardContext(DbContextOptions<CustomerCardContext> options)
             : base(options)
@@ -23,5 +24,5 @@ namespace TokenGenerator.Models
         /// </summary>
         /// <value>The DbCardContext to a list of customers.</value>
         public DbSet<Customer> Customers { get; set; }
-    }
+  }
 }

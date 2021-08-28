@@ -20,14 +20,14 @@ namespace TokenGenerator.Controllers
             Card dbCard = await this.customerCardContext.Cards.FindAsync(card.Id);
             dbCard.Customer = await this.customerCardContext.Customers.FindAsync(card.CustomerId);
 
-            if (dbCard == null || dbCard.Customer == null || !dbCard.ValidateToken(card))
+            if (dbCard == null || dbCard.Customer == null || !this.validator.ValidateToken(card, dbCard))
             {
                 return Unauthorized(new { Validated = false });
             }
 
             Console.WriteLine(dbCard.CardNumber);
 
-            var tempToken = dbCard.CreateToken();
+            var tempToken = this.validator.CreateToken(dbCard);
 
             return Accepted(new { Validated = tempToken == card.Token });
         }

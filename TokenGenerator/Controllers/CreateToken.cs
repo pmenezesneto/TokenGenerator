@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using TokenGenerator.Business;
 using TokenGenerator.Models;
 
 namespace TokenGenerator.Controllers
@@ -14,15 +15,17 @@ namespace TokenGenerator.Controllers
     [ApiController]
     public partial class TokenController : Controller
     {
-        private readonly CustomerCardContext customerCardContext;
+        private readonly IDbContext customerCardContext;
+        private readonly IValidator validator;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerCardController"/> class.
         /// </summary>
         /// <param name="customerCardContext">The customer card context.</param>
-        public TokenController(CustomerCardContext customerCardContext)
+        public TokenController(IDbContext customerCardContext, IValidator validator)
         {
             this.customerCardContext = customerCardContext;
+            this.validator = validator;
         }
 
         /// <summary>
@@ -64,7 +67,7 @@ namespace TokenGenerator.Controllers
                     Card tempCard = new Card();
                     tempCard.CardNumber = card.CardNumber;
                     tempCard.Cvv = card.Cvv;
-                    var token = tempCard.CreateToken();
+                    var token = this.validator.CreateToken(tempCard);
                     card.Token = token;
 
                     this.customerCardContext.Cards.Add(card);
