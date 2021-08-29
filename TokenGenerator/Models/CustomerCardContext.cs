@@ -1,16 +1,18 @@
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TokenGenerator.Business;
 
 namespace TokenGenerator.Models
 {
     /// <summary>
     /// CustomerCardContext class.
     /// </summary>
-    public class CustomerCardContext : DbContext, IDbContext
+    public class CustomerCardContext : DbContext, ICustomerCardContext
     {
+        private Validator validator;
         public CustomerCardContext(DbContextOptions<CustomerCardContext> options)
             : base(options)
         {
+            this.validator = new Validator();
         }
 
         /// <summary>
@@ -24,5 +26,14 @@ namespace TokenGenerator.Models
         /// </summary>
         /// <value>The DbCardContext to a list of customers.</value>
         public DbSet<Customer> Customers { get; set; }
-  }
+        public IValidator Validator
+        {
+            get
+            {
+                return this.validator;
+            }
+
+            set => this.validator = new Validator();
+        }
+    }
 }

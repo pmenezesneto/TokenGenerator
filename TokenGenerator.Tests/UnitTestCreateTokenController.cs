@@ -16,23 +16,42 @@ namespace TokenGenerator.Tests
         [Fact]
         public async void CreateToken_ValidInput_ShouldReturnsValidObject()
         {
-            var options = new DbContextOptionsBuilder<CustomerCardContext>()
-                .UseInMemoryDatabase("CashlessRegistrator")
-                .Options;
-
+            var moqCustomerCardContext = new Moq.Mock<ICustomerCardContext>();
             var moqValidate = new Moq.Mock<IValidator>();
-            var card = new Card
+            var fakeCard = new Card
             {
                 CardNumber = 5687921,
                 Cvv = 14
             };
-            var context = new CustomerCardContext(options);
+            
+            var fakeCardsData = new List<Card>
+            {
+                new Card
+                {
+                    CardNumber = 654987,
+                    CustomerId = 1,
+                    Cvv = 23
+                }
+            };
+            var fakeCustomerData = new List<Customer>
+            {
+                new Customer
+                {
+                    Id = 1
+                }
+            };
+
+            var fakeCardsDbSet = Globals.MockDbSet(fakeCardsData);
+            var fakeCustomerDbSet = Globals.MockDbSet(fakeCustomerData);
 
             moqValidate.Setup(validate => validate.CreateToken(It.IsAny<Card>())).Returns(2);
+            moqCustomerCardContext.Setup(customerCardContext => customerCardContext.Validator).Returns(moqValidate.Object);
+            moqCustomerCardContext.Setup(cardContext => cardContext.Cards).Returns(fakeCardsDbSet.Object);
+            moqCustomerCardContext.Setup(customerContext => customerContext.Customers).Returns(fakeCustomerDbSet.Object);
+            
+            var controller = new TokenController(moqCustomerCardContext.Object);
 
-            var controller = new TokenController(context, moqValidate.Object);
-
-            var response = await controller.CreateCard(card);
+            var response = await controller.CreateCard(fakeCard);
             var result = (CreatedAtActionResult)response.Result;
 
             Assert.IsType<CreatedAtActionResult>(response.Result);
@@ -42,9 +61,6 @@ namespace TokenGenerator.Tests
         [Fact]
         public async void CreatToken_ExistentCard_ShouldReturnsValidObject()
         {
-            var options = new DbContextOptionsBuilder<CustomerCardContext>()
-                .UseInMemoryDatabase("CashlessRegistrator")
-                .Options;
             var fakeCardsData = new List<Card>
             {
                 new Card
@@ -68,17 +84,16 @@ namespace TokenGenerator.Tests
                 Cvv = 23
             };
 
-            var fakeCardsDbSet = MockDbSet(fakeCardsData);
-            var fakeCustomerDbSet = MockDbSet(fakeCustomerData);
+            var fakeCardsDbSet = Globals.MockDbSet(fakeCardsData);
+            var fakeCustomerDbSet = Globals.MockDbSet(fakeCustomerData);
 
-            var moqCustomerCardContext = new Moq.Mock<IDbContext>();
+            var moqCustomerCardContext = new Moq.Mock<ICustomerCardContext>();
             var moqValidate = new Moq.Mock<IValidator>();
-            var moqIQuerybleCard = new System.Collections.Generic.List<Card>();
 
             moqCustomerCardContext.Setup(cardContext => cardContext.Cards).Returns(fakeCardsDbSet.Object);
             moqCustomerCardContext.Setup(customerContext => customerContext.Customers).Returns(fakeCustomerDbSet.Object);
             
-            var controller = new TokenController(moqCustomerCardContext.Object, moqValidate.Object);
+            var controller = new TokenController(moqCustomerCardContext.Object);
 
             var response = await controller.CreateCard(fakeCard);
             var result = (CreatedAtActionResult)response.Result;
@@ -87,17 +102,62 @@ namespace TokenGenerator.Tests
             Assert.Null(((CardResponse)result.Value).Token);
         }
 
-        Mock<DbSet<T>> MockDbSet<T>(IEnumerable<T> list) where T : class, new() {
-            IQueryable<T> queryableList = list.AsQueryable();
-            Mock<DbSet<T>> dbSetMock = new Mock<DbSet<T>>();
-            dbSetMock.As<IQueryable<T>>().Setup(x => x.Provider).Returns(queryableList.Provider);
-            dbSetMock.As<IQueryable<T>>().Setup(x => x.Expression).Returns(queryableList.Expression);
-            dbSetMock.As<IQueryable<T>>().Setup(x => x.ElementType).Returns(queryableList.ElementType);
-            dbSetMock.As<IQueryable<T>>().Setup(x => x.GetEnumerator()).Returns(() => queryableList.GetEnumerator());
-            dbSetMock.Setup(x => x.FindAsync()).Returns(new System.Threading.Tasks.ValueTask<T>());
-            dbSetMock.Setup(x => x.Add(It.IsAny<T>())).Callback<T>((s) => queryableList.Append(s));
+        [Fact]
+        public void UnitTest_CreateToken_InvalidCard_ShouldReturnsBadRequest()
+        {
+            
+            var options = new DbContextOptionsBuilder<CustomerCardContext>()
+                .UseInMemoryDatabase("CashlessRegistrator")
+                .Options;
+            var context = new CustomerCardContext(options);
+            var controller = new TokenController(context);
 
-            return dbSetMock;
+            var response = controller.CreateCard(null);
+
+            Assert.IsType<BadRequestResult>(response.Result.Result);
+        }
+
+        [Fact]
+        public void UnitTet_CreteToken_ThrowsException_ShouldReturnsInternalServerError()
+        {
+            var fakeCardsData = new List<Card>
+            {
+                new Card
+                {
+                    CardNumber = 654987,
+                    CustomerId = 1,
+                    Cvv = 23
+                }
+            };
+            var fakeCustomerData = new List<Customer>
+            {
+                new Customer
+                {
+                    Id = 1
+                }
+            };
+            var fakeCard = new Card
+            {
+                CardNumber = 654987,
+                CustomerId = 1,
+                Cvv = 23
+            };
+
+            var fakeCardsDbSet = Globals.MockDbSet(fakeCardsData);
+            var fakeCustomerDbSet = Globals.MockDbSet(fakeCustomerData);
+
+            var moqCustomerCardContext = new Moq.Mock<ICustomerCardContext>();
+            var moqValidate = new Moq.Mock<IValidator>();
+
+            moqCustomerCardContext.Setup(cardContext => cardContext.Cards).Throws(new Exception ("Test exception throws."));
+            
+            var controller = new TokenController(moqCustomerCardContext.Object);
+
+            var response = controller.CreateCard(fakeCard);
+            var objectResult = (ObjectResult)response.Result.Result;
+
+            Assert.IsType<ObjectResult>(response.Result.Result);
+            Assert.Equal(500, objectResult.StatusCode);
         }
     }
 }

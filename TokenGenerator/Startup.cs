@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using TokenGenerator.Models;
+using System;
 
 namespace TokenGenerator
 {
@@ -28,6 +26,7 @@ namespace TokenGenerator
             {
               options.UseInMemoryDatabase("CashlessRegistrator");
             });
+            services.AddScoped<ICustomerCardContext, CustomerCardContext>();
 
             services.AddControllers();
 
